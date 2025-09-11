@@ -1,0 +1,9 @@
+<h1>Carriers</h1>
+<a href="{% url 'add_carrier' %}">Add New Carrier</a>
+<ul>
+    {% for carrier in carriers %}
+        <li><a href="{% url 'carrier_detail' carrier.pk %}">{{ carrier.name }}</a></li>
+    {% empty %}
+        <li>No carriers available.</li>
+    {% endfor %}
+</ul>
