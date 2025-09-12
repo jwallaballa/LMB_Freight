@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from order.models import Order
+from carrier.models import Carrier
 import json
 
 def dashboard_view(request):
@@ -13,6 +14,10 @@ def dashboard_view(request):
     total_orders = orders.count()
     open_pos = orders.filter(status='open').count()
     unassigned = orders.filter(carrier__isnull=True).count() + orders.filter(carrier='').count()
+
+    #Pie chart
+    open_orders_count = open_pos
+    closed_orders_count = orders.filter(status='closed').count()
 
     context = {
         'orders': orders,

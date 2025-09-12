@@ -1,15 +1,16 @@
 import os
 from pathlib import Path
 
-# Build paths inside the project
-BASE_DIR = Path(__file__).resolve().parent.parent
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# This is a robust way to get the project's root directory.
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # -------------------------
 # Secret & Debug
 # -------------------------
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY',
-    'django-insecure-default-for-dev-only'  # fallback default
+    'django-insecure-default-for-dev-only'
 )
 
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
@@ -21,8 +22,8 @@ ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').sp
 # Installed apps & middleware
 # -------------------------
 INSTALLED_APPS = [
-    'django.contrib.auth',
     'django.contrib.admin',
+    'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -48,7 +49,8 @@ ROOT_URLCONF = 'base.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        # Correctly join BASE_DIR to the root 'templates' directory
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -98,6 +100,9 @@ USE_TZ = True
 # Static files
 # -------------------------
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # -------------------------
 # Default primary key
