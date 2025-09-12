@@ -1,6 +1,93 @@
-<h1>{{ carrier.name }}</h1>
-<p>Contact: {{ carrier.contact_name }}</p>
-<p>Email: {{ carrier.email }}</p>
-<p>Phone: {{ carrier.phone }}</p>
-<p>Address: {{ carrier.address }}</p>
-<a href="{% url 'carrier_list' %}">Back to list</a>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ carrier.name }} Details{% endblock %}
+
+{% block content %}
+    <div class="main-content">
+        <div class="form-container">
+            <h1>{{ carrier.name }}</h1>
+            <p><strong>Contact:</strong> <span contenteditable="true" data-field="contact_name">{{ carrier.contact_name }}</span></p>
+            <p><strong>Email:</strong> <span contenteditable="true" data-field="email">{{ carrier.email }}</span></p>
+            <p><strong>Phone:</strong> <span contenteditable="true" data-field="phone">{{ carrier.phone }}</span></p>
+            <p><strong>Location:</strong> <span contenteditable="true" data-field="location">{{ carrier.location }}</span></p>
+
+            <h2>Rates</h2>
+            {% if carrier.rates.all %}
+                <ul>
+                {% for rate in carrier.rates.all %}
+                    <li>
+                        <span contenteditable="true" data-field="rate" data-rate-id="{{ rate.pk }}">${{ rate.rate }}</span> -
+                        <span contenteditable="true" data-field="description" data-rate-id="{{ rate.pk }}">{{ rate.description }}</span>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No rates available.</p>
+            {% endif %}
+
+            <div class="form-actions">
+                <a href="{% url 'edit_carrier' carrier.pk %}" class="button">Edit Carrier</a>
+                <a href="{% url 'carrier_list' %}" class="button cancel-button">Back to list</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.startsWith(name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                el.addEventListener('blur', (event) => {
+                    const fieldName = event.target.dataset.field;
+                    const newValue = event.target.textContent.trim();
+                    const rateId = event.target.dataset.rateId;
+
+                    let url;
+                    let payload;
+
+                    if (rateId) {
+                        url = '/carriers/update-rate/' + rateId + '/';
+                        payload = { field: fieldName, value: newValue };
+                    } else {
+                        url = '/carriers/update-field/{{ carrier.pk }}/';
+                        payload = { field: fieldName, value: newValue };
+                    }
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            console.log('Update successful');
+                        } else {
+                            console.error('Update failed:', data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+        });
+    </script>
+{% endblock %}

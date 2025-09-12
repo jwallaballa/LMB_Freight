@@ -151,3 +151,281 @@ td[contenteditable="true"]:hover {
     border: 1px solid #ccc;
     font-size: 0.9rem;
 }
+
+/* Form Styling (Carrier form section) */
+/* Container for the form to give it a nice background and shadow */
+.form-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: 40px auto;
+}
+
+/* Style the form header */
+.form-container h1 {
+    text-align: center;
+    color: #1e5732;
+    margin-bottom: 25px;
+}
+
+/* Style each form field's container */
+.form-field {
+    margin-bottom: 20px;
+}
+
+.form-field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+/* Style the input fields and textareas */
+.carrier-form input[type="text"],
+.carrier-form input[type="number"],
+.carrier-form input[type="email"], /* Add this line */
+.carrier-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+/* Also add the email input to the focus rule */
+.carrier-form input:focus,
+.carrier-form input[type="email"]:focus, /* Add this line */
+.carrier-form textarea:focus {
+    border-color: #49a942;
+    outline: none;
+    box-shadow: 0 0 5px rgba(73, 169, 66, 0.5);
+}
+
+/* Style the buttons */
+.form-actions {
+    text-align: right;
+    margin-top: 25px;
+}
+
+.button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.button:hover {
+    filter: brightness(110%);
+}
+
+/* Specific styles for the save and cancel buttons */
+.carrier-form .button {
+    background-color: #49a942;
+}
+
+.cancel-button {
+    background-color: #d6d6d6;
+    color: #333;
+    margin-left: 10px;
+}
+
+/* Navbar hover */
+.sidebar ul ul {
+    display: none;
+    list-style-type: none; /* remove disc on each item */
+}
+
+.sidebar li:hover > ul {
+    display: block;
+}
+
+/* Carrier detail page */
+/* Styling for the new contact card layout */
+.contact-card-container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 40px auto;
+}
+
+.contact-card h1 {
+    text-align: center;
+    color: #1e5732;
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+}
+
+.contact-info {
+    margin-bottom: 30px;
+}
+
+.contact-field {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.contact-field:last-child {
+    border-bottom: none;
+}
+
+.contact-field strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.contact-field span {
+    color: #555;
+    text-align: right;
+    flex: 1;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    padding: 0 5px;
+}
+
+.contact-field span:hover {
+    background-color: #f9f9f9;
+}
+
+/* Rates Section */
+.rates-section {
+    margin-top: 20px;
+}
+
+.rates-section h2 {
+    color: #1e5732;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+    border-bottom: 2px solid #1e5732;
+    padding-bottom: 5px;
+}
+
+.rate-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.rate-item:last-child {
+    border-bottom: none;
+}
+
+
+/* Carrier list */
+/* General table styles */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    margin-top: 20px;
+}
+
+.data-table th, .data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.data-table th {
+    background-color: #1e5732;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.data-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.data-table tbody tr:hover {
+    background-color: #e0f7ff;
+    cursor: pointer;
+}
+
+.data-table td {
+    font-size: 0.95rem;
+    color: #333;
+}
+
+/* Style for the "Add New Carrier" button */
+.controls .button {
+    padding: 10px 15px;
+    background-color: #49a942;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.controls .button:hover {
+    filter: brightness(110%);
+}
+/* Style for the "Add New Carrier" button */
+.controls .button {
+    padding: 10px 15px;
+    background-color: #49a942;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.controls .button:hover {
+    filter: brightness(110%);
+}
+
+/* Style for the View button inside the table */
+.view-button {
+    background-color: #1e5732;
+    color: white;
+    padding: 8px 12px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.view-button:hover {
+    background-color: #33734e;
+}
+
+/* dashboard filter */
+/* Filter Toggle Buttons */
+.filter-toggle {
+    display: inline-flex;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-left: 10px;
+    border: 1px solid #ccc;
+}
+
+.filter-btn {
+    padding: 8px 12px;
+    border: none;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #555;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.filter-btn:hover {
+    background-color: #e0e0e0;
+}
+
+.filter-btn.active {
+    background-color: #1e5732;
+    color: white;
+}

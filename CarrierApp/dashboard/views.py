@@ -4,26 +4,39 @@ from order.models import Order
 from carrier.models import Carrier
 import json
 
+
 def dashboard_view(request):
     """
     Renders the dashboard with stats and a list of all orders.
     """
-    orders = Order.objects.all().order_by('-created_at')
+    status_filter = request.GET.get('status', 'all')
+
+    if status_filter == 'open':
+        orders = Order.objects.filter(status='open').order_by('-created_at')
+    elif status_filter == 'closed':
+        orders = Order.objects.filter(status='closed').order_by('-created_at')
+    else:
+        orders = Order.objects.all().order_by('-created_at')
+
+    carriers = Carrier.objects.all()
 
     # Stats
-    total_orders = orders.count()
+    total_orders = orders.count()  # Use the filtered queryset for the stats
     open_pos = orders.filter(status='open').count()
     unassigned = orders.filter(carrier__isnull=True).count() + orders.filter(carrier='').count()
 
-    #Pie chart
+    # Pie Chart Data
     open_orders_count = open_pos
-    closed_orders_count = orders.filter(status='closed').count()
+    closed_orders_count = total_orders - open_pos
 
     context = {
         'orders': orders,
         'total_orders': total_orders,
         'pending_shipments': open_pos,
         'unassigned': unassigned,
+        'open_orders_count': open_orders_count,
+        'closed_orders_count': closed_orders_count,
+        'carriers': carriers,
     }
     return render(request, 'dashboard.html', context)
 
