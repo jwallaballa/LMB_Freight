@@ -5,12 +5,41 @@
 
 {% block content %}
     <div class="main-content">
-        <h1>Add Carrier</h1>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Save</button>
-        </form>
-        <a href="{% url 'carrier_list' %}">Cancel</a>
+        <div class="form-container">
+            <h1>Add Carrier</h1>
+            <form method="post" class="carrier-form">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="form-field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                {% endfor %}
+
+
+                {{ formset.management_form }}
+                {% for rate_form in formset %}
+                    <div class="rate-formset-row">
+                        {% for hidden in rate_form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+                        <div class="form-field">
+                            {{ rate_form.rate.label_tag }}
+                            {{ rate_form.rate }}
+                        </div>
+                        <div class="form-field">
+                            {{ rate_form.description.label_tag }}
+                            {{ rate_form.description }}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="form-actions">
+                    <button type="submit" class="button">Save</button>
+                    <a href="{% url 'carrier_list' %}" class="button cancel-button">Cancel</a>
+                </div>
+            </form>
+        </div>
     </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 <div class="sidebar">
     <h2>LMB Freight</h2>
     <ul>
-        <li><a href="#">Dashboard</a></li>
+        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
         <li>
             <a href="{% url 'carrier_list' %}">Carriers</a>
             <ul style="margin-left: 15px; list-style-type: disc;">
@@ -10,7 +10,7 @@
                 {% empty %}
                     <li><em>No carriers yet</em></li>
                 {% endfor %}
-                <li><a href="{% url 'add_carrier' %}" style="color:#49a942;">+ Add Carrier</a></li>
+
             </ul>
         </li>
     </ul>

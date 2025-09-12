@@ -1,13 +1,10 @@
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-# This is a robust way to get the project's root directory.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-# -------------------------
+
 # Secret & Debug
-# -------------------------
 SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY',
     'django-insecure-default-for-dev-only'
@@ -18,9 +15,7 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
-# -------------------------
 # Installed apps & middleware
-# -------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -64,9 +59,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'base.wsgi.application'
 
-# -------------------------
+
 # Database (Postgres via .env)
-# -------------------------
 DATABASES = {
     'default': {
         'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.postgresql'),
@@ -78,9 +72,8 @@ DATABASES = {
     }
 }
 
-# -------------------------
+
 # Password validators
-# -------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -88,23 +81,19 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# -------------------------
+
 # Internationalization
-# -------------------------
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# -------------------------
+
 # Static files
-# -------------------------
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# -------------------------
 # Default primary key
-# -------------------------
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -22,8 +22,15 @@
     </div>
 
     <div class="controls">
-        <a href="{% url 'add_order' %}">Create order</a>
+        <a href="{% url 'add_order' %}" class="button create-order">Create order</a>
         <input type="text" id="search" placeholder="Search orders...">
+
+        <div class="filter-toggle">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="open">Open</button>
+            <button class="filter-btn" data-filter="closed">Closed</button>
+        </div>
+
         <select id="rows-per-page">
             <option value="25">25 rows</option>
             <option value="50">50 rows</option>
@@ -46,7 +53,7 @@
         </thead>
         <tbody id="orders-tbody">
             {% for order in orders %}
-            <tr data-id="{{ order.id }}">
+            <tr data-id="{{ order.id }}" data-status="{{ order.status }}">
                 <td contenteditable="true" data-field="customer_name">{{ order.customer_name }}</td>
                 <td contenteditable="true" data-field="po_number">{{ order.po_number }}</td>
                 <td contenteditable="true" data-field="ship_date">{{ order.ship_date|date:"Y-m-d" }}</td>
@@ -79,6 +86,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             const table = document.querySelector('table');
             const notification = document.getElementById('notification');
+            const filterButtons = document.querySelectorAll('.filter-toggle .filter-btn');
+            const tableRows = document.querySelectorAll('#orders-tbody tr');
 
             function getCookie(name) {
                 let cookieValue = null;
@@ -133,6 +142,7 @@
                 select.addEventListener('change', (event) => {
                     const newStatus = event.target.value;
                     const orderId = event.target.dataset.id;
+                    const row = event.target.closest('tr');
 
                     fetch('/dashboard/update-order/', {
                         method: 'POST',
@@ -144,12 +154,43 @@
                     })
                     .then(res => res.json())
                     .then(result => {
-                        if (result.status === 'success') showNotification('Order status updated!');
+                        if (result.status === 'success') {
+                            showNotification('Order status updated!');
+                            row.dataset.status = newStatus; // Update the data-status attribute
+                            // Re-apply the filter after a status change
+                            const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+                            filterTable(activeFilter);
+                        }
                         else showNotification('Error: ' + result.message, 'error');
                     })
                     .catch(err => showNotification('Network error: ' + err, 'error'));
                 });
             });
+
+            // Toggle switch filter logic
+            function filterTable(filter) {
+                tableRows.forEach(row => {
+                    const status = row.dataset.status;
+                    if (filter === 'all' || status === filter) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to the clicked button
+                    button.classList.add('active');
+                    // Get the filter value and apply the filter
+                    const filter = button.dataset.filter;
+                    filterTable(filter);
+                });
+            });
+
 
             // Table search
             document.getElementById('search').addEventListener('input', e => {
