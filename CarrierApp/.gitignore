@@ -1,0 +1,29 @@
+# PyCharm-specific files
+.idea/
+*.iml
+
+# VS Code-specific files
+.vscode/
+
+# Virtual environment
+venv/
+env/
+
+# Django and database files
+.env
+local_settings.py
+
+# Compiled Python files
+*.pyc
+__pycache__/
+
+# Collected static and media files
+/static_collected/
+/media/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Other temporary files
+*~
