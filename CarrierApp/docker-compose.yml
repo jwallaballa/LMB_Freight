@@ -23,7 +23,6 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-
   pgadmin:
     container_name: carrier-pgadmin
     image: dpage/pgadmin4:6.4
@@ -34,6 +33,18 @@ services:
       - "8082:80"
     depends_on:
       - pg
+
+
+  test:
+    build: .
+    command: pytest
+    volumes:
+      - .:/app
+    depends_on:
+      - pg
+    env_file:
+      - .env
+    restart: "no"
 
 volumes:
   postgres_data:
