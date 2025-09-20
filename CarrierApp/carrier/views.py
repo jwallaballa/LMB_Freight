@@ -1,8 +1,8 @@
-# carrier/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from .models import Carrier, Rate
 from .forms import CarrierForm, RateFormSet
+from order.models import Order
 import json
 
 
@@ -13,8 +13,15 @@ def carrier_list(request):
 
 def carrier_detail(request, pk):
     carrier = get_object_or_404(Carrier, pk=pk)
-    # The detail page is now read-only, we handle edits via AJAX
-    return render(request, 'carrier/carrier_detail.html', {'carrier': carrier})
+
+    # Fetch all open orders where the carrier name matches the current carrier
+    open_orders = Order.objects.filter(carrier__iexact=carrier.name, status='open')
+
+    context = {
+        'carrier': carrier,
+        'open_orders': open_orders,
+    }
+    return render(request, 'carrier/carrier_detail.html', context)
 
 
 def add_carrier(request):
