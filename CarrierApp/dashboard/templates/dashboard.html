@@ -156,8 +156,8 @@
                     .then(result => {
                         if (result.status === 'success') {
                             showNotification('Order status updated!');
-                            row.dataset.status = newStatus; // Update the data-status attribute
-                            // Re-apply the filter after a status change
+                            row.dataset.status = newStatus;
+
                             const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
                             filterTable(activeFilter);
                         }
@@ -209,20 +209,47 @@
                 });
             });
 
+            // Bar chart data from Django context
+            const ordersData = JSON.parse('{{ orders_counts_json|safe }}');
+            const openOrdersData = JSON.parse('{{ open_orders_counts_json|safe }}');
+            const closedOrdersData = JSON.parse('{{ closed_orders_counts_json|safe }}');
+            const monthsLabels = JSON.parse('{{ months_labels_json|safe }}');
+
             // Existing bar chart
             const ctxBar = document.getElementById('ordersChart').getContext('2d');
             new Chart(ctxBar, {
                 type: 'bar',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-                    datasets: [{
-                        label: 'Orders',
-                        data: [12, 19, 3, 5],
-                        backgroundColor: '#49a942'
-                    }]
+                    labels: monthsLabels,
+                    datasets: [
+                        {
+                            label: 'Total Orders',
+                            data: ordersData,
+                            backgroundColor: '#49a942'
+                        },
+                        {
+                            label: 'Open Orders',
+                            data: openOrdersData,
+                            backgroundColor: '#ffc107'
+                        },
+                        {
+                            label: 'Closed Orders',
+                            data: closedOrdersData,
+                            backgroundColor: '#007bff'
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
+                    scales: {
+                        x: {
+                            stacked: false // Set to true if you want the bars on top of each other
+                        },
+                        y: {
+                            stacked: false,
+                            beginAtZero: true
+                        }
+                    }
                 }
             });
         });
