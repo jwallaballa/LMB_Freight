@@ -429,3 +429,9 @@ td[contenteditable="true"]:hover {
     background-color: #1e5732;
     color: white;
 }
+
+.card,
+.card .card-header {
+    background-color: #f8f9fa !important;
+    color: #212529; /* optional: makes text dark for contrast */
+}
