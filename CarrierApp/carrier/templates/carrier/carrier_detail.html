@@ -1,93 +1,216 @@
 {% extends 'base.html' %}
-{% load static %}
-
 {% block title %}{{ carrier.name }} Details{% endblock %}
-
 {% block content %}
-    <div class="main-content">
-        <div class="form-container">
-            <h1>{{ carrier.name }}</h1>
-            <p><strong>Contact:</strong> <span contenteditable="true" data-field="contact_name">{{ carrier.contact_name }}</span></p>
-            <p><strong>Email:</strong> <span contenteditable="true" data-field="email">{{ carrier.email }}</span></p>
-            <p><strong>Phone:</strong> <span contenteditable="true" data-field="phone">{{ carrier.phone }}</span></p>
-            <p><strong>Location:</strong> <span contenteditable="true" data-field="location">{{ carrier.location }}</span></p>
+<style>
 
-            <h2>Rates</h2>
-            {% if carrier.rates.all %}
-                <ul>
-                {% for rate in carrier.rates.all %}
-                    <li>
-                        <span contenteditable="true" data-field="rate" data-rate-id="{{ rate.pk }}">${{ rate.rate }}</span> -
-                        <span contenteditable="true" data-field="description" data-rate-id="{{ rate.pk }}">{{ rate.description }}</span>
-                    </li>
-                {% endfor %}
-                </ul>
-            {% else %}
-                <p>No rates available.</p>
-            {% endif %}
+    :root {
+        --primary-dark-green: #1F3F34;
+        --secondary-light-green: #C5E0C2;
+        --off-white: #F9F9F9;
+        --text-dark: #333;
+    }
 
-            <div class="form-actions">
-                <a href="{% url 'edit_carrier' carrier.pk %}" class="button">Edit Carrier</a>
-                <a href="{% url 'carrier_list' %}" class="button cancel-button">Back to list</a>
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--off-white);
+        color: var(--text-dark);
+    }
+
+    /* General card styling */
+    .card {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    .card-header {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--primary-dark-green);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--secondary-light-green);
+    }
+</style>
+<script src="https://cdn.tailwindcss.com"></script>
+<main class="container mx-auto p-4 md:p-8">
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="card">
+            <div class="card-header">Company Information</div>
+            <div class="card-body">
+                <h1 class="text-3xl font-bold mb-1">{{ carrier.name }}</h1>
+                <p class="text-lg font-medium text-gray-600">{{ carrier.location }}</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">Contact Information</div>
+            <div class="card-body space-y-2">
+                <p class="font-semibold text-gray-700">Contact Name: {{ carrier.contact_name }}</p>
+                <p class="text-gray-700">Email: {{ carrier.email }}</p>
+                <p class="text-gray-700">Phone: {{ carrier.phone }}</p>
             </div>
         </div>
     </div>
-{% endblock %}
 
-{% block scripts %}
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; i < cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.startsWith(name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
+    <div class="card">
+        <div class="card-header">Rates</div>
+        <div class="card-body">
+            <form method="post" action="{% url 'carrier_detail' carrier.pk %}" id="rates-form">
+                {% csrf_token %}
+                {{ formset.management_form }}
 
-            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-                el.addEventListener('blur', (event) => {
-                    const fieldName = event.target.dataset.field;
-                    const newValue = event.target.textContent.trim();
-                    const rateId = event.target.dataset.rateId;
+                <div id="rate-forms-container" class="space-y-4">
+                    {% for form in formset %}
+                    <div class="p-4 border border-gray-200 rounded-md bg-gray-50 rate-form-row">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="{{ form.rate.id_for_label }}" class="block text-sm font-medium text-gray-700">Rate:</label>
+                                {{ form.rate }}
+                            </div>
+                            <div>
+                                <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">Description:</label>
+                                {{ form.description }}
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center justify-end">
+                            {% if form.instance.pk %}
+                                <button type="button" class="delete-rate-btn bg-red-600 text-white px-3 py-1 rounded-md text-sm hover:bg-red-700 transition-colors" data-delete-url="{% url 'delete_rate' form.instance.pk %}">
+                                    Delete
+                                </button>
+                            {% else %}
+                                <button type="button" class="remove-rate-btn bg-red-600 text-white px-3 py-1 rounded-md text-sm hover:bg-red-700 transition-colors">
+                                    Remove
+                                </button>
+                            {% endif %}
+                            {{ form.DELETE }}
+                            {{ form.id }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
 
-                    let url;
-                    let payload;
+                <div class="flex justify-end space-x-4 mt-6">
+                    <button type="button" id="add-rate-btn" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                        Add Rate
+                    </button>
+                    <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-green-700 transition-colors">
+                        Save Rates
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-                    if (rateId) {
-                        url = '/carriers/update-rate/' + rateId + '/';
-                        payload = { field: fieldName, value: newValue };
-                    } else {
-                        url = '/carriers/update-field/{{ carrier.pk }}/';
-                        payload = { field: fieldName, value: newValue };
-                    }
+    <template id="empty-form-template">
+        <div class="p-4 border border-gray-200 rounded-md bg-gray-50 rate-form-row">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Rate:</label>
+                    {{ formset.empty_form.rate }}
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Description:</label>
+                    {{ formset.empty_form.description }}
+                </div>
+            </div>
+            <div class="mt-4 flex items-center justify-end">
+                <button type="button" class="remove-rate-btn bg-red-600 text-white px-3 py-1 rounded-md text-sm hover:bg-red-700 transition-colors">
+                    Remove
+                </button>
+                {{ formset.empty_form.DELETE }}
+                {{ formset.empty_form.id }}
+            </div>
+        </div>
+    </template>
 
-                    fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCookie('csrftoken')
-                        },
-                        body: JSON.stringify(payload)
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            console.log('Update successful');
-                        } else {
-                            console.error('Update failed:', data.message);
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-                });
-            });
+    <div id="confirmation-popup" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-80">
+            <p class="text-lg font-semibold text-gray-800">Are you sure you want to remove this rate?</p>
+            <div class="mt-4 flex justify-end space-x-2">
+                <button id="cancel-delete" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400">Cancel</button>
+                <button id="confirm-delete" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Yes, remove</button>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addButton = document.getElementById('add-rate-btn');
+        const formContainer = document.getElementById('rate-forms-container');
+        const totalForms = document.querySelector('#id_rate_set-TOTAL_FORMS');
+        const confirmationPopup = document.getElementById('confirmation-popup');
+        const confirmButton = document.getElementById('confirm-delete');
+        const cancelButton = document.getElementById('cancel-delete');
+        let rateToRemove = null;
+
+        addButton.addEventListener('click', function() {
+            const formCount = parseInt(totalForms.value);
+            const emptyFormTemplate = document.getElementById('empty-form-template').innerHTML
+                .replace(/__prefix__/g, formCount);
+
+            const newFormDiv = document.createElement('div');
+            newFormDiv.innerHTML = emptyFormTemplate;
+            formContainer.appendChild(newFormDiv.firstElementChild);
+
+            totalForms.value = formCount + 1;
         });
-    </script>
-{% endblock %}
+
+        // Event delegation for handling both 'delete' (existing) and 'remove' (new) buttons
+        formContainer.addEventListener('click', function(event) {
+            // Check if the clicked element is a delete button for an existing rate
+            if (event.target.classList.contains('delete-rate-btn')) {
+                rateToRemove = event.target.closest('.rate-form-row');
+                confirmationPopup.classList.remove('hidden');
+                confirmationPopup.classList.add('flex');
+            }
+            // Check if the clicked element is a remove button for a new rate
+            else if (event.target.classList.contains('remove-rate-btn')) {
+                event.target.closest('.rate-form-row').remove();
+                const formCount = parseInt(totalForms.value);
+                totalForms.value = formCount - 1;
+            }
+        });
+
+        confirmButton.addEventListener('click', function() {
+            if (rateToRemove) {
+                const deleteUrl = rateToRemove.querySelector('.delete-rate-btn').getAttribute('data-delete-url');
+                fetch(deleteUrl, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 'delete': true })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        return response.json().then(errorData => {
+                            alert('Error: ' + errorData.message);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An unexpected error occurred.');
+                })
+                .finally(() => {
+                    confirmationPopup.classList.add('hidden');
+                    confirmationPopup.classList.remove('flex');
+                });
+            }
+        });
+
+        cancelButton.addEventListener('click', function() {
+            confirmationPopup.classList.add('hidden');
+            confirmationPopup.classList.remove('flex');
+            rateToRemove = null;
+        });
+    });
+</script>

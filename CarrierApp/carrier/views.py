@@ -8,18 +8,30 @@ import json
 
 def carrier_list(request):
     carriers = Carrier.objects.all()
-    return render(request, 'carrier/carrier_list.html', {'carriers': carriers})
+
+    all_carriers = Carrier.objects.all()
+    return render(request, 'carrier/carrier_list.html', {'carriers': carriers, 'all_carriers': all_carriers})
 
 
 def carrier_detail(request, pk):
     carrier = get_object_or_404(Carrier, pk=pk)
+    open_orders = Order.objects.filter(carrier=carrier, status='open').order_by('-created_at')
 
-    # Fetch all open orders where the carrier name matches the current carrier
-    open_orders = Order.objects.filter(carrier__iexact=carrier.name, status='open')
+    if request.method == 'POST':
+        formset = RateFormSet(request.POST, instance=carrier)
+        if formset.is_valid():
+            formset.save()
+            return redirect('carrier_detail', pk=carrier.pk)
+    else:
+        formset = RateFormSet(instance=carrier)
+
+    all_carriers = Carrier.objects.all()
 
     context = {
         'carrier': carrier,
         'open_orders': open_orders,
+        'formset': formset,
+        'all_carriers': all_carriers,
     }
     return render(request, 'carrier/carrier_detail.html', context)
 
@@ -94,3 +106,20 @@ def update_carrier_rate(request, pk):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=405)
+
+
+from django.http import JsonResponse
+from .models import Rate
+from django.views.decorators.http import require_POST
+from django.shortcuts import get_object_or_404
+import json
+
+
+@require_POST
+def delete_rate(request, pk):
+    try:
+        rate = get_object_or_404(Rate, pk=pk)
+        rate.delete()
+        return JsonResponse({'status': 'success', 'message': 'Rate deleted successfully.'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
