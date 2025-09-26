@@ -10,5 +10,6 @@ urlpatterns = [
     path('update-field/<int:pk>/', views.update_carrier_field, name='update_carrier_field'),
     path('update-rate/<int:pk>/', views.update_carrier_rate, name='update_carrier_rate'),
     path('delete_rate/<int:pk>/', views.delete_rate, name='delete_rate'),
+    path('save_rate/', views.save_rate, name='save_rate'),
 
 ]
