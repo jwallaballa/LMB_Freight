@@ -23,7 +23,7 @@ def dashboard_view(request):
     else:
         orders = Order.objects.all().order_by('-created_at')
 
-    carriers = Carrier.objects.all()
+    all_carriers = Carrier.objects.all()
 
     # Stats
     total_orders = orders.count()
@@ -91,7 +91,7 @@ def dashboard_view(request):
         'unassigned': unassigned,
         'open_orders_count': open_orders_count,
         'closed_orders_count': closed_orders_count,
-        'carriers': carriers,
+        'all_carriers': all_carriers,
         'orders_counts_json': json.dumps(orders_counts),
         'months_labels_json': json.dumps(months_labels),
         'open_orders_counts_json': json.dumps(open_orders_counts),
