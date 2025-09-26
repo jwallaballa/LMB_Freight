@@ -1,0 +1,30 @@
+steps:
+
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'LOCATION-docker.pkg.dev/$PROJECT_ID/REPOSITORY_NAME/SERVICE_NAME:$COMMIT_SHA'
+    - '.'
+
+
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'push'
+    - 'LOCATION-docker.pkg.dev/$PROJECT_ID/REPOSITORY_NAME/SERVICE_NAME:$COMMIT_SHA'
+
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'gcloud'
+  args:
+    - 'run'
+    - 'deploy'
+    - 'SERVICE_NAME'
+    - '--image'
+    - 'LOCATION-docker.pkg.dev/$PROJECT_ID/REPOSITORY_NAME/SERVICE_NAME:$COMMIT_SHA'
+    - '--region'
+    - 'SERVICE_REGION'
+    - '--allow-unauthenticated'
+
+images:
+  - 'LOCATION-docker.pkg.dev/$PROJECT_ID/REPOSITORY_NAME/SERVICE_NAME:$COMMIT_SHA'
