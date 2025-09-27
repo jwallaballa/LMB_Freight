@@ -1,15 +1,18 @@
-FROM python:3.12-slim
+FROM python:3.11-slim
 
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
 
 
 WORKDIR /app
 
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc libpq-dev \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        gcc \
+        libc-dev \
+        libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -27,6 +30,7 @@ USER appuser
 EXPOSE 8080
 
 
-CMD exec python -m gunicorn --bind 0.0.0.0:${PORT} nc_tutorials.wsgi:application
-
-
+CMD exec gunicorn --bind 0.0.0.0:$PORT \
+    --workers 2 \
+    --timeout 120 \
+    lmb_freight.wsgi:application
